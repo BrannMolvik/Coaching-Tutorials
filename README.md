@@ -4,4 +4,4 @@
 
 //2. https://youtu.be/EfJqvP85jvg Basic wavestate fundamentals
 
-//3.  TF2 disguise trick
+//3. https://youtu.be/yDaElbRATQI TF2 disguise trick
