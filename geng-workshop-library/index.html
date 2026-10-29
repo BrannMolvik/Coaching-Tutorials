@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gen.G League of Legends Workshop Library</title>
+<style>
+:root{
+  --navy:#07152a;
+  --navy-2:#0d203b;
+  --navy-3:#122a49;
+  --yellow:#f4c430;
+  --yellow-soft:#ffe07b;
+  --ink:#13233b;
+  --muted:#66758d;
+  --line:#dfe6ef;
+  --surface:#ffffff;
+  --surface-2:#f6f8fb;
+  --general:#35b66a;
+  --semi:#e4ae23;
+  --special:#8d5bd7;
+  --shadow:0 12px 32px rgba(6,22,43,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#eef2f7;color:var(--ink)}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,#0b2445 64%,#17365e 100%);color:white;padding:38px 48px 34px;border-bottom:5px solid var(--yellow)}
+.hero-inner{max-width:1480px;margin:auto;display:flex;justify-content:space-between;gap:30px;align-items:flex-end}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--yellow);margin-bottom:8px}
+h1{font-size:clamp(30px,4vw,48px);line-height:1;margin:0 0 12px;letter-spacing:-.04em}
+.subtitle{max-width:820px;color:#d4dfef;line-height:1.55;margin:0;font-size:16px}
+.hero-badge{min-width:220px;border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.06);border-radius:16px;padding:16px 18px;backdrop-filter:blur(8px)}
+.hero-badge strong{display:block;font-size:28px;color:white}
+.hero-badge span{color:#c9d6e8;font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+.main{max-width:1480px;margin:0 auto;padding:28px 48px 70px}
+.topbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{border:1px solid #cfd8e6;background:white;color:#53647d;border-radius:10px;padding:11px 16px;font-weight:800;box-shadow:0 2px 8px rgba(7,21,42,.03)}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy);box-shadow:0 8px 20px rgba(7,21,42,.16)}
+.topbar-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.view-toggle{display:flex;gap:4px;background:#e4eaf2;border:1px solid #d2dbe7;border-radius:10px;padding:4px}
+.view-mode{border:0;background:transparent;color:#617188;border-radius:7px;padding:7px 11px;font-size:12px;font-weight:850}
+.view-mode.active{background:var(--navy);color:white;box-shadow:0 3px 10px rgba(7,21,42,.18)}
+.search{display:flex;align-items:center;gap:10px;background:white;border:1px solid #d2dbe7;border-radius:10px;padding:0 14px;height:42px;min-width:280px}
+.search input{border:0;outline:0;width:100%;color:var(--ink)}
+.intro-card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:20px;box-shadow:0 4px 16px rgba(6,22,43,.04);display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
+.intro-card p{margin:0;color:var(--muted);line-height:1.55;max-width:900px}
+.level-legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.legend-chip{display:flex;align-items:center;gap:7px;border-radius:999px;background:#f7f9fc;border:1px solid #dfe6ef;padding:7px 11px;font-size:12px;font-weight:800;color:#52627a}
+.dot{width:9px;height:9px;border-radius:50%}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.filter{border:1px solid #d5deea;background:white;color:#5a6b82;border-radius:999px;padding:8px 13px;font-weight:700;font-size:13px}
+.filter.active{background:#fff8da;color:#785b00;border-color:#eed065}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:24px 0 14px}
+.section-title h2{margin:0;font-size:22px;letter-spacing:-.02em}
+.section-title p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.level-section{margin-bottom:26px}
+.level-section + .level-section{padding-top:2px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.compact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.compact-card{position:relative;background:white;border:1px solid var(--line);border-radius:10px;min-height:58px;padding:11px 14px 11px 17px;display:flex;align-items:center;font-weight:800;font-size:13px;line-height:1.25;color:var(--ink);box-shadow:0 3px 10px rgba(7,21,42,.035);transition:.15s ease;text-align:left;width:100%}
+.compact-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(7,21,42,.09)}
+.compact-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:10px 0 0 10px;background:var(--general)}
+.compact-card.semi::before{background:var(--semi)}
+.compact-card.special::before{background:var(--special)}
+.card{position:relative;background:white;border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 18px rgba(7,21,42,.05);overflow:hidden;transition:.18s ease;display:flex;flex-direction:column;min-height:250px}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card.general{border-top:5px solid var(--general)}
+.card.semi{border-top:5px solid var(--semi)}
+.card.special{border-top:5px solid var(--special)}
+.card-head{padding:17px 18px 10px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.badge{font-size:10px;letter-spacing:.07em;text-transform:uppercase;font-weight:900;border-radius:999px;padding:5px 8px;background:#edf2f8;color:#52627a}
+.badge.general{background:#e7f7ed;color:#1d7f48}
+.badge.semi{background:#fff4cf;color:#846000}
+.badge.special{background:#f1e9fb;color:#6d3fb4}
+.badge.duration{background:#eef3fa;color:#50627a}
+.card h3{font-size:19px;line-height:1.17;margin:0 0 9px;letter-spacing:-.02em}
+.card .desc{color:#68778e;line-height:1.48;margin:0;font-size:13.5px}
+.card-bottom{margin-top:auto;padding:13px 18px 16px;border-top:1px solid #edf1f6;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap}
+.mini-tag{font-size:10px;font-weight:800;color:#6f7f95;background:#f4f7fa;border-radius:5px;padding:4px 6px}
+.view-btn{border:0;background:var(--navy);color:white;border-radius:8px;padding:8px 10px;font-weight:800;font-size:12px;white-space:nowrap}
+.empty{padding:30px;background:white;border:1px dashed #bec9d8;border-radius:12px;text-align:center;color:#76849a}
+.footer-note{margin-top:30px;color:#79869a;font-size:12px;line-height:1.5}
+.modal{position:fixed;inset:0;background:rgba(3,12,25,.72);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+.modal.show{display:flex}
+.modal-panel{width:min(1000px,100%);max-height:90vh;overflow:auto;background:white;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal-top{position:sticky;top:0;z-index:2;background:var(--navy);color:white;padding:22px 24px 18px;border-bottom:4px solid var(--yellow);display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.modal-top h2{margin:4px 0 5px;font-size:28px;letter-spacing:-.03em}
+.modal-top p{margin:0;color:#cbd8e9;font-size:13px}
+.close{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09);color:white;width:38px;height:38px;border-radius:9px;font-size:20px}
+.modal-body{padding:24px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.detail{background:#f7f9fc;border:1px solid #e2e8f1;border-radius:12px;padding:16px}
+.detail.full{grid-column:1/-1}
+.detail h4{margin:0 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#53647a}
+.detail p,.detail ul{margin:0;color:#405168;line-height:1.55;font-size:14px}
+.detail ul{padding-left:18px}
+.gen-g{border-left:4px solid var(--yellow);background:#fffaf0}
+@media (max-width:1050px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.compact-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero-inner{align-items:flex-start}.hero-badge{display:none}.detail-grid{grid-template-columns:1fr}}
+@media (max-width:720px){.hero{padding:28px 20px}.main{padding:20px}.cards{grid-template-columns:1fr}.compact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intro-card{flex-direction:column}.level-legend{justify-content:flex-start}.topbar-actions{width:100%}.search{min-width:100%;flex:1}.modal{padding:8px}.modal-top{padding:18px}.modal-body{padding:16px}}
+@media print{.topbar,.filters,.view-btn,.close,.view-toggle{display:none!important}.main{padding:12px}.hero{padding:22px}.cards{grid-template-columns:repeat(2,1fr)}.card{break-inside:avoid}.modal{position:static;background:none;padding:0}.modal.show{display:block}.modal-panel{box-shadow:none;max-height:none;width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="kicker">Gen.G Practicum • League of Legends Curriculum</div>
+        <h1>Workshop Library</h1>
+        <p class="subtitle">A modular library of standalone workshops for 2–4 week League of Legends bootcamps. Workshops can be combined with practical solo queue, scrims, review, or other training blocks depending on the cohort.</p>
+      </div>
+      <div class="hero-badge"><strong id="countBadge">0</strong><span>available modules</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="tabs" id="tabs"></div>
+      <div class="topbar-actions">
+        <div class="view-toggle" aria-label="Workshop view">
+          <button class="view-mode active" id="detailedView" type="button">Detailed</button>
+          <button class="view-mode" id="compactView" type="button">Compact</button>
+        </div>
+        <label class="search" aria-label="Search workshops">⌕ <input id="search" placeholder="Search workshops or topics…" /></label>
+      </div>
+    </div>
+
+    <section class="intro-card">
+      <div>
+        <strong id="categoryTitle">Gameplay Workshops</strong>
+        <p id="categoryDescription">Standalone game-focused workshops. Each module is designed to make sense on its own and can be followed by relevant practical training.</p>
+      </div>
+      <div class="level-legend" title="Workshop level legend">
+        <div class="legend-chip"><span class="dot" style="background:var(--general)"></span>General</div>
+        <div class="legend-chip"><span class="dot" style="background:var(--semi)"></span>Semi-Specialized</div>
+        <div class="legend-chip"><span class="dot" style="background:var(--special)"></span>Specialized</div>
+      </div>
+    </section>
+
+    <div class="filters" id="filters"></div>
+    <div id="content"></div>
+
+    <p class="footer-note">Level legend: <b style="color:#1f874d">General</b> = useful to most competitive players. <b style="color:#8a6500">Semi-Specialized</b> = best once fundamentals are established or players operate within a structured team. <b style="color:#7041b7">Specialized</b> = primarily intended for high-level competitive teams, academy environments, Tier 3 players, or similar participants.</p>
+  </main>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <div class="modal-top">
+      <div>
+        <div class="kicker" id="modalKicker">Workshop</div>
+        <h2 id="modalTitle"></h2>
+        <p id="modalMeta"></p>
+      </div>
+      <button class="close" id="close" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const categories = {
+  gameplay: {
+    label: 'Gameplay',
+    title: 'Gameplay Workshops',
+    description: 'Standalone game-focused workshops. Each module is designed to make sense on its own and can be followed by relevant practical training.'
+  },
+  role: {
+    label: 'Role Development',
+    title: 'Role Development Tracks',
+    description: 'Role-specific practice tracks used mainly during solo queue or smaller breakout sessions. These are not intended as full-team classroom workshops.'
+  },
+  performance: {
+    label: 'Player Performance',
+    title: 'Player Performance Workshops',
+    description: 'Physical and performance-support modules that help players train sustainably and maintain performance across intensive bootcamp schedules.'
+  },
+  pr: {
+    label: 'PR & Media',
+    title: 'PR & Media Workshops',
+    description: 'A separate draft category based on the group PR/media work. These modules can be refined independently from the gameplay curriculum.'
+  }
+};
+
+const workshops = [
+  {
+    id:'effective-practice',cat:'gameplay',level:'general',title:'Effective Practice & Player Development',duration:'60–90 min',tags:['INDIVIDUAL','PRACTICE'],
+    desc:'Turn playtime into deliberate improvement through clear goals, feedback loops, and targeted solo queue objectives.',
+    purpose:'Teach players how to structure improvement rather than simply increasing the number of games they play.',
+    objectives:['Set specific and measurable practice objectives.','Identify weaknesses that are actionable rather than vague.','Use solo queue as targeted practice.','Create a repeatable review and improvement loop.'],
+    topics:['Deliberate practice','Goal setting','Practice quality vs. volume','Champion pool planning','Solo queue objectives','Feedback and review loops'],
+    activity:'Players build a short personal development plan, choose one or two specific in-game objectives, and apply them during the following practice block.',
+    assessment:'Compare the player’s initial practice plan with their post-session plan and evaluate whether goals are specific, actionable, and measurable.',
+    geng:'A Gen.G coach can demonstrate how professional players receive practice objectives and how observations from review are converted into the next training block.',
+    adapt:'For developing players, focus on creating simple habits. For experienced players, use more specific performance indicators and champion/role-specific objectives.'
+  },
+  {
+    id:'laning',cat:'gameplay',level:'general',title:'Laning & Matchup Understanding',duration:'60–90 min',tags:['LANING','INDIVIDUAL'],
+    desc:'Understand matchup states, trading patterns, pressure, champion interactions, and how lanes change over time.',
+    purpose:'Help players move from memorized matchup rules toward understanding why a lane is favorable, neutral, or dangerous.',
+    objectives:['Recognize key champion interaction windows.','Understand pressure and trading patterns.','Identify when lane states change due to levels, items, summoners, or jungle information.'],
+    topics:['Trading windows','Cooldowns','Level/item spikes','Pressure','Summoner spells','Jungle influence','Adapting to opponent behavior'],
+    activity:'Players analyze several matchup states, explain what each champion wants, then enter role-specific solo queue with a matchup objective.',
+    assessment:'Players explain a lane plan before a game and compare it with what actually happened afterward.',
+    geng:'Gen.G staff can use high-level match examples to show how professional players prepare and adapt within matchups.',
+    adapt:'Examples should be role-specific during practice, while the classroom concepts remain broad enough for the whole group.'
+  },
+  {
+    id:'wave-resource',cat:'gameplay',level:'general',title:'Wave & Resource Management',duration:'60–90 min',tags:['MACRO','LANING'],
+    desc:'Use waves, recalls, CS, XP, and resource allocation to create advantages and better map states.',
+    purpose:'Build an understanding of resources as tools for creating tempo and controlling future decisions.',
+    objectives:['Recognize common wave states.','Plan recalls around waves and objectives.','Understand when resources should be taken, shared, or given.','Connect lane management with map tempo.'],
+    topics:['Freeze / slow push / crash','Recall timings','CS and XP','Resource allocation','Side waves','Tempo creation'],
+    activity:'Work through wave-state scenarios and choose the best action before applying selected objectives in solo queue.',
+    assessment:'Scenario decisions followed by short review of whether the player achieved the intended wave/resource goal.',
+    geng:'Professional examples can demonstrate how small wave decisions create larger map advantages at high level.',
+    adapt:'Use simpler lane-state recognition for newer players and more complex cross-map resource allocation for experienced cohorts.'
+  },
+  {
+    id:'tempo-macro',cat:'gameplay',level:'general',title:'Tempo, Macro & Map Movement',duration:'60–90 min',tags:['MACRO','TEAM'],
+    desc:'Learn the fundamentals of coordinated resets, rotations, pressure, and purposeful movement around the map.',
+    purpose:'Improve map decision-making by connecting timing, resources, information, and positional advantage.',
+    objectives:['Identify when to reset or continue pressure.','Understand basic rotations and numbers advantages.','Recognize how lane pressure enables movement.','Avoid moving without a clear purpose.'],
+    topics:['Tempo','Resets','Rotations','Lane priority','Side-lane pressure','Numbers advantage','Purposeful map movement'],
+    activity:'Teams receive common map-state scenarios and must decide where to move, when to reset, and which source of pressure enables the next action.',
+    assessment:'Players justify decisions using available information, resources, and timing rather than results alone.',
+    geng:'Gen.G coaches can compare player decisions with professional macro examples and explain the information used in those calls.',
+    adapt:'Can be taught with static scenarios for developing groups or fast sequential scenarios for experienced teams.'
+  },
+  {
+    id:'vision-fundamentals',cat:'gameplay',level:'general',title:'Vision & Information Fundamentals',duration:'60–90 min',tags:['VISION','INFORMATION'],
+    desc:'Understand vision as an information system: what the team knows, what it does not know, and how that changes decisions.',
+    purpose:'Build a shared foundation for purposeful warding, information sharing, tracking, and risk assessment before advanced team vision systems are introduced.',
+    objectives:['Explain what useful information a ward provides.','Recognize common information gaps and unsafe assumptions.','Connect vision and tracking information to player decisions.','Understand basic responsibilities for maintaining and communicating information.'],
+    topics:['Information value','Warding purpose','Tracking','Information gaps','Map awareness','Risk assessment','Communicating information'],
+    activity:'Players review several map states, identify what is known and unknown, choose useful vision locations, and explain which decisions are safe with the available information.',
+    assessment:'Players must justify vision and movement choices based on information gained rather than simply naming standard ward locations.',
+    geng:'Gen.G staff can show how professional players communicate information and how basic vision responsibilities connect to larger team systems.',
+    adapt:'Keep this broadly applicable. Objective-specific setup and advanced information denial belong in the higher-level standalone workshops.'
+  },
+  {
+    id:'drafting',cat:'gameplay',level:'general',title:'Drafting Fundamentals',duration:'60–90 min',tags:['DRAFT','TEAM'],
+    desc:'Build a practical understanding of bans, champion priorities, counters, flexibility, and basic draft structure.',
+    purpose:'Give players a shared language for understanding draft decisions before moving into more advanced composition work.',
+    objectives:['Understand basic pick/ban logic.','Recognize priority, counterpick, and flexibility.','Explain why a champion is picked beyond personal comfort.','Consider draft information and uncertainty.'],
+    topics:['Pick/ban structure','Priority','Counters','Flex picks','Champion pools','Information advantage','Basic adaptation'],
+    activity:'Small groups complete short mock drafts and explain the reasoning behind each phase.',
+    assessment:'Evaluate whether teams can explain the purpose of their picks and bans rather than only naming strong champions.',
+    geng:'Gen.G staff can show how professional draft discussions are structured and what information influences decisions.',
+    adapt:'Use simplified champion pools for less experienced participants and wider strategic constraints for advanced groups.'
+  },
+  {
+    id:'role-dynamics',cat:'gameplay',level:'general',title:'Understanding Team & Role Dynamics',duration:'60–90 min',tags:['TEAM','ROLES'],
+    desc:'Understand what each role wants from the game, what teammates need from one another, and how roles enable each other.',
+    purpose:'Build team awareness so players understand the needs and responsibilities of teammates outside their own role.',
+    objectives:['Describe the priorities of each role.','Recognize when a teammate needs help or space.','Understand strongside/weakside expectations.','Connect individual choices to team conditions.'],
+    topics:['Role priorities','Strongside / weakside','Resource needs','Jungle-lane interaction','Support/map interaction','Enabling teammates'],
+    activity:'Players explain how the same map state looks from each role’s perspective, then receive role-specific practice objectives for solo queue.',
+    assessment:'Players identify what their teammates need in several team scenarios and explain how their own role should respond.',
+    geng:'A coach can demonstrate how role responsibilities are coordinated within a professional team and how expectations are communicated.',
+    adapt:'The classroom session remains full-team. Role-specific depth belongs in breakout/solo queue practice rather than separate full-team lectures.'
+  },
+  {
+    id:'communication',cat:'gameplay',level:'general',title:'Communication & Shotcalling',duration:'60–90 min',tags:['TEAM','COMMS'],
+    desc:'Improve information quality, shotcalling, communication hierarchy, and coordination without creating unnecessary noise.',
+    purpose:'Teach players to communicate information that changes decisions and to coordinate under time pressure.',
+    objectives:['Distinguish useful from redundant communication.','Deliver concise, timely information.','Understand shotcalling responsibility.','Maintain communication after mistakes.'],
+    topics:['Information priority','Call timing','Confirmation','Hierarchy','Clutter','Planning vs. reaction','Post-mistake communication'],
+    activity:'Review recorded team comms, identify missing or redundant information, then repeat a scenario with communication constraints.',
+    assessment:'Compare communication quality before and after feedback using clarity, relevance, timing, and response.',
+    geng:'Professional comm examples and coaching feedback can show how elite teams reduce noise while maintaining necessary information.',
+    adapt:'Developing groups can focus on core call vocabulary; established teams can focus on call ownership and decision hierarchy.'
+  },
+  {
+    id:'teamfighting',cat:'gameplay',level:'general',title:'Teamfighting & Role Execution',duration:'60–90 min',tags:['TEAM','COMBAT'],
+    desc:'Understand positioning, threats, engage/disengage, target selection, and individual responsibilities within fights.',
+    purpose:'Help players read teamfights as structured interactions rather than purely mechanical moments.',
+    objectives:['Identify primary threats and win conditions in a fight.','Understand engage and disengage options.','Recognize role-specific positioning responsibilities.','Adapt target selection to game state.'],
+    topics:['Threat assessment','Engage/disengage','Front-to-back','Flanks','Peel','Cooldown tracking','Target selection'],
+    activity:'Break down selected teamfights, pause before key decisions, then apply the concepts in scrims or controlled scenarios.',
+    assessment:'Players explain their role before a fight and compare expected responsibilities with actual execution.',
+    geng:'Gen.G can use professional teamfight examples to show how composition, information, and communication shape execution.',
+    adapt:'Use clear front-to-back examples for developing players and more ambiguous multi-angle fights for advanced teams.'
+  },
+  {
+    id:'vod-review',cat:'gameplay',level:'general',title:'VOD Review & Self-Analysis',duration:'60–90 min',tags:['REVIEW','ANALYSIS'],
+    desc:'Learn how to review games productively, identify root causes, and turn observations into practical improvement goals.',
+    purpose:'Move players away from result-based review and toward actionable analysis.',
+    objectives:['Separate outcome from decision quality.','Identify root causes rather than only visible mistakes.','Prioritize the most important review points.','Convert review into a practice objective.'],
+    topics:['Decision quality','Root causes','Review scope','Self-review','Coach review','Actionable feedback'],
+    activity:'Players review a selected segment alone first, then compare their analysis with teammates or a coach.',
+    assessment:'Evaluate whether the player’s review identifies causes, alternatives, and a clear next action.',
+    geng:'A Gen.G coach/analyst can demonstrate their review process and show how professional feedback is prioritized.',
+    adapt:'Newer players can use guided questions; stronger players can lead parts of the review themselves.'
+  },
+  {
+    id:'mentality',cat:'gameplay',level:'general',title:'Competitive Mentality & In-Game Resilience',duration:'60–90 min',tags:['MENTAL','DECISION'],
+    desc:'Maintain rational decision-making after mistakes, when behind, or when a game becomes emotionally difficult.',
+    purpose:'Connect competitive resilience directly to League decisions rather than treating mentality as a generic motivational topic.',
+    objectives:['Recover after mistakes without immediately overforcing.','Recognize when to trade rather than contest.','Use crossmapping and resource trades when behind.','Maintain useful communication under pressure.'],
+    topics:['Resetting after mistakes','Playing from behind','Crossmapping','Avoiding overforcing','Knowing when not to contest','Risk vs. necessity','Communication under frustration'],
+    activity:'Players work through losing-game scenarios and choose between contesting, trading, resetting, or giving resources, then explain why.',
+    assessment:'Evaluate whether decisions become more structured and less reactive in disadvantage states.',
+    geng:'Coaches can share examples of how competitive teams stabilize difficult games and what they expect from players after mistakes.',
+    adapt:'Keep the focus on game-related behavior. Psychological material should stay within the expertise and scope available to the program.'
+  },
+  {
+    id:'compositions',cat:'gameplay',level:'semi',title:'Team Compositions & Win Conditions',duration:'60–90 min',tags:['TEAM','STRATEGY'],
+    desc:'Understand how compositions interact, what each side needs to accomplish, and how win conditions change over time.',
+    purpose:'Develop team-level strategic understanding beyond basic drafting.',
+    objectives:['Identify composition strengths and weaknesses.','Recognize preferred fight and map conditions.','Explain how win conditions change by game state.','Align role responsibilities with composition goals.'],
+    topics:['Composition identity','Scaling','Engage/disengage','Range','Side lanes','Objective control','Game-state win conditions'],
+    activity:'Teams compare two compositions, create a game plan for each side, and then test those assumptions in practice.',
+    assessment:'Players present a concise win-condition plan and revise it after reviewing the game.',
+    geng:'Gen.G coaches can show how professional teams translate draft into a game plan and how that plan changes after early-game events.',
+    adapt:'Most valuable for participants who already understand drafting basics and can operate within a coordinated team.'
+  },
+
+  {
+    id:'objective-prep',cat:'gameplay',level:'semi',title:'Objective Preparation & Control',duration:'60–90 min',tags:['OBJECTIVES','TEAM SYSTEMS'],
+    desc:'Prepare Dragon, Herald, Baron, and other neutral-objective situations through timing, lane pressure, resets, vision, positioning, and contingency planning.',
+    purpose:'Teach teams that objective control begins well before the objective spawns and depends on coordinated preparation rather than only winning the final fight.',
+    objectives:['Plan the 60–90 seconds before an objective.','Coordinate lane states and reset timings.','Establish useful vision and approach routes.','Recognize when an objective should be contested, traded, delayed, or given.'],
+    topics:['Spawn timers','Pre-objective resets','Lane priority','Vision setup','Entry routes','Positioning','Contest vs. trade','Post-objective transition'],
+    activity:'Teams receive objective scenarios at different game states and build a preparation sequence from one minute before spawn through the post-objective transition.',
+    assessment:'Evaluate whether the plan connects lane states, timing, information, positioning, and realistic alternatives rather than focusing only on the final objective fight.',
+    geng:'Gen.G coaches can demonstrate professional objective-preparation routines and show how multiple roles coordinate before entering the river or objective area.',
+    adapt:'Use simpler Dragon setups for developing teams and more complex Baron, side-wave, or disadvantage scenarios for structured competitive teams.'
+  },
+  {
+    id:'advanced-vision',cat:'gameplay',level:'special',title:'Advanced Vision Control & Information Denial',duration:'60–90 min',tags:['VISION','TEAM SYSTEMS'],
+    desc:'Build and defend vision lines, deny opponent information, control approach routes, and use uncertainty as a competitive resource.',
+    purpose:'Move beyond basic ward placement into coordinated information control for high-level team play.',
+    objectives:['Create layered vision plans around important map areas.','Identify which enemy information should be denied.','Coordinate sweeper and control-ward usage.','Use missing information to restrict opponent movement and choices.'],
+    topics:['Vision lines','Information denial','Control wards','Sweep timing','Approach routes','Tracking information','Uncertainty','Vision responsibility'],
+    activity:'Teams design offensive and defensive vision plans for the same map state, then compare what information each plan gives or removes from the opponent.',
+    assessment:'Players explain not only where vision is placed, but what decision each piece of information enables and what opponent information is intentionally denied.',
+    geng:'Gen.G staff can demonstrate how elite teams organize information control around objectives, side lanes, and opponent movement.',
+    adapt:'Best used with teams already comfortable with basic vision and objective preparation.'
+  },
+  {
+    id:'reset-tempo',cat:'gameplay',level:'semi',title:'Reset Timings & Tempo Management',duration:'60–90 min',tags:['TEMPO','TEAM SYSTEMS'],
+    desc:'Coordinate recalls and spending windows so the team reaches important map states on time and with synchronized resources.',
+    purpose:'Show how poorly timed individual recalls can create team-level disadvantages and how coordinated resets generate tempo.',
+    objectives:['Identify strong and weak reset windows.','Coordinate recalls around waves and objectives.','Understand staggered versus synchronized resets.','Recognize when staying on the map creates more risk than value.'],
+    topics:['Recall windows','Spend timing','Wave states','Objective timers','Synchronized resets','Staggered resets','Tempo loss'],
+    activity:'Players receive timelines with waves, gold, objective timers, and map pressure, then choose reset sequences and explain the consequences of each option.',
+    assessment:'Teams must produce a reset plan that gets relevant players onto the map with appropriate resources before the next priority event.',
+    geng:'Gen.G coaches can show how professional teams plan reset sequences and punish teams that remain on the map too long.',
+    adapt:'Useful for most structured teams; advanced versions can incorporate multiple side lanes and asymmetric recall timings.'
+  },
+  {
+    id:'crossmapping',cat:'gameplay',level:'semi',title:'Crossmapping & Trading Resources',duration:'60–90 min',tags:['MACRO','TEAM SYSTEMS'],
+    desc:'Recognize when direct contest is poor and create value elsewhere through towers, waves, camps, vision, or opposite-side objectives.',
+    purpose:'Reduce unnecessary forcing by teaching teams to evaluate what can be gained when the opponent commits resources elsewhere.',
+    objectives:['Recognize unwinnable or low-value contests.','Identify available value on the opposite side of the map.','Compare the relative value of different trades.','Coordinate team movement instead of reacting late to opponent plays.'],
+    topics:['Crossmapping','Resource trades','Opposite-side pressure','Giving objectives','Tower/wave value','Camp denial','Numbers disadvantage'],
+    activity:'Teams work through scenarios where the opponent has first access to a play and choose between contesting, delaying, or immediately creating value elsewhere.',
+    assessment:'Players justify the trade using timing, resources, team strength, and future map state rather than assuming every neutral objective must be contested.',
+    geng:'Gen.G coaches can use professional examples where giving one resource creates a better trade elsewhere.',
+    adapt:'Can connect directly to the Competitive Mentality workshop when the tendency to overforce comes from frustration or fear of giving resources.'
+  },
+  {
+    id:'set-plays',cat:'gameplay',level:'semi',title:'Setting Up & Executing Set Plays',duration:'60–90 min',tags:['TEAM SYSTEMS','EXECUTION'],
+    desc:'Plan repeatable coordinated actions such as dives, invades, traps, lane ganks, and rotations with clear prerequisites and role assignments.',
+    purpose:'Teach teams to create structured plays rather than relying only on spontaneous calls.',
+    objectives:['Identify the conditions required before a set play begins.','Assign responsibilities to each role.','Recognize abort conditions and alternative outcomes.','Review execution separately from whether the play succeeded.'],
+    topics:['Dive setup','Invades','Objective traps','Lane ganks','Coordinated rotations','Prerequisites','Abort conditions','Role assignment'],
+    activity:'Teams design one set play from preparation through execution, then run or simulate it and review whether each prerequisite was actually met.',
+    assessment:'Evaluate preparation, timing, role clarity, and adaptation rather than judging only the result of the play.',
+    geng:'Gen.G coaches can show how professional teams rehearse common patterns and create reliable execution from repeated situations.',
+    adapt:'Start with simple three-player actions for less experienced teams and move toward multi-lane or objective-linked plays for stronger groups.'
+  },
+  {
+    id:'closing-lead',cat:'gameplay',level:'semi',title:'Closing Games With a Lead',duration:'60–90 min',tags:['GAME STATE','TEAM SYSTEMS'],
+    desc:'Convert an advantage into a win without giving the opponent unnecessary comeback opportunities.',
+    purpose:'Teach teams how to extend pressure methodically instead of treating a lead as permission to force every available play.',
+    objectives:['Identify the safest sources of additional advantage.','Deny opponent resources while protecting shutdowns.','Use waves and objectives to create pressure.','Recognize when waiting improves the next play.'],
+    topics:['Resource denial','Wave synchronization','Objective pressure','Baron usage','Shutdown protection','Risk control','Forcing vs. waiting'],
+    activity:'Teams receive winning map states and construct a short sequence for extending the lead while listing the main throw conditions they must avoid.',
+    assessment:'Players must show a repeatable process for converting pressure rather than relying on a single high-risk fight.',
+    geng:'Gen.G coaches can break down professional examples of controlled game closure and why apparently slow decisions can be the highest-percentage option.',
+    adapt:'Useful for structured teams at many levels because failure to close advantages is not limited to elite play.'
+  },
+  {
+    id:'stabilizing-behind',cat:'gameplay',level:'semi',title:'Stabilizing Games From Behind',duration:'60–90 min',tags:['GAME STATE','TEAM SYSTEMS'],
+    desc:'Reduce further losses, preserve useful resources, and create realistic comeback opportunities when the team falls behind.',
+    purpose:'Replace desperation play with structured disadvantage-state decision-making.',
+    objectives:['Recognize which resources can safely be contested.','Protect important waves, camps, and shutdowns.','Use crossmapping when direct contests are poor.','Identify realistic comeback windows without repeatedly overforcing.'],
+    topics:['Loss minimization','Crossmapping','Giving objectives','Safe resource collection','Shutdowns','Comeback windows','Risk tolerance'],
+    activity:'Teams receive disadvantage scenarios and construct a stabilization plan for the next several minutes rather than searching immediately for one comeback fight.',
+    assessment:'Players explain how their plan slows the opponent advantage and what specific conditions would justify increasing risk later.',
+    geng:'Gen.G coaches can demonstrate how competitive teams keep games playable and create pressure even when they cannot contest the strongest area of the map.',
+    adapt:'Can be paired with Competitive Mentality & In-Game Resilience but remains a standalone strategic workshop.'
+  },
+  {
+    id:'side-lane',cat:'gameplay',level:'special',title:'Side-Lane Management & Map Pressure',duration:'60–90 min',tags:['SIDE LANES','TEAM SYSTEMS'],
+    desc:'Coordinate side waves, matching responsibilities, group timing, and map pressure in structured mid- and late-game states.',
+    purpose:'Teach high-level teams how side-lane assignments shape objective access, numbers advantages, and opponent movement.',
+    objectives:['Assign side-lane responsibilities based on composition and game state.','Recognize when to catch, push, hold, or leave a side wave.','Coordinate side pressure with the grouped portion of the team.','Avoid losing pressure through poor synchronization.'],
+    topics:['4-1','1-3-1','Wave assignment','Matching','Group timing','Teleport pressure','Objective linkage','Side-lane safety'],
+    activity:'Teams solve several mid-game maps with different compositions and determine who should occupy each lane, when players should move, and what the remaining team should accomplish.',
+    assessment:'Evaluate whether side-lane assignments create a coherent team plan rather than five individually reasonable movements.',
+    geng:'Gen.G staff can demonstrate professional side-lane coordination and how assignments change with composition, summoner spells, and objective timers.',
+    adapt:'Keep as a standalone specialized module rather than treating it as the automatic next step after basic macro.'
+  },
+  {
+    id:'resource-allocation',cat:'gameplay',level:'special',title:'Resource Allocation in Team Play',duration:'60–90 min',tags:['RESOURCES','TEAM SYSTEMS'],
+    desc:'Decide who should receive waves, camps, kills, buffs, and safe farm based on composition, item spikes, player roles, and the current win condition.',
+    purpose:'Make resource distribution an explicit team decision instead of an accidental result of player movement.',
+    objectives:['Identify which champions convert resources most effectively at a given moment.','Coordinate farm without creating unnecessary dead time.','Recognize when a player should sacrifice resources for team pressure.','Reallocate resources when the original plan changes.'],
+    topics:['Gold and XP allocation','Item spikes','Carry priority','Jungle camps','Side waves','Sacrifice','Resource efficiency'],
+    activity:'Teams are given compositions and changing game states, then allocate the next several waves and camps while explaining the intended payoff.',
+    assessment:'Evaluate whether resource choices support the team plan and timing rather than personal score lines.',
+    geng:'Gen.G coaches can explain how professional teams coordinate resource priority and how allocation changes between early, mid, and late game.',
+    adapt:'Best for high-level teams with enough coordination for deliberate resource assignment.'
+  },
+  {
+    id:'objective-trading',cat:'gameplay',level:'special',title:'Objective Trading & Map Exchange Planning',duration:'60–90 min',tags:['OBJECTIVES','MACRO'],
+    desc:'Plan multi-step map exchanges and evaluate the relative value of objectives, towers, waves, camps, and positional control.',
+    purpose:'Extend basic crossmapping into deliberate exchange planning where the team anticipates both sides of the map several actions ahead.',
+    objectives:['Compare the value of different map resources in context.','Anticipate the opponent response to an exchange.','Plan follow-up positioning after a trade.','Recognize when an apparently equal trade favors one team composition or game state.'],
+    topics:['Map exchanges','Objective value','Tower value','Wave value','Camp denial','Follow-up positioning','Tempo after trade'],
+    activity:'Teams build exchange plans from complex map states and then trace the likely second and third consequences of each decision.',
+    assessment:'Players must explain the full sequence and resulting map state, not only the first resources exchanged.',
+    geng:'Gen.G analysts can demonstrate professional examples where the value of a trade depends on what happens immediately afterward.',
+    adapt:'Use only after players are comfortable with basic crossmapping and objective preparation.'
+  },
+  {
+    id:'power-spikes',cat:'gameplay',level:'special',title:'Playing Around Power Spikes',duration:'60–90 min',tags:['TIMING','TEAM SYSTEMS'],
+    desc:'Identify temporary windows of strength from levels, items, summoners, ultimates, and composition timing, then prepare the map to exploit them.',
+    purpose:'Teach teams to create plays because they are strong at a specific moment, not simply because an objective or fight is available.',
+    objectives:['Identify meaningful individual and team power spikes.','Prepare waves and resets before a spike arrives.','Increase or reduce aggression based on relative strength.','Recognize when a window is temporary and should not be delayed.'],
+    topics:['Item spikes','Level spikes','Ultimates','Summoner spells','Relative strength','Timing windows','Preparation'],
+    activity:'Teams receive timelines with approaching item and level breakpoints and build the map plan needed to use each window.',
+    assessment:'Players connect the power spike to a specific actionable window rather than only stating that a champion is strong.',
+    geng:'Gen.G coaches can show how professional teams coordinate purchases and map movement around short-lived strength advantages.',
+    adapt:'Most valuable for high-level teams able to coordinate map preparation around precise timing windows.'
+  },
+  {
+    id:'early-game-plan',cat:'gameplay',level:'special',title:'Early-Game Team Planning',duration:'60–90 min',tags:['EARLY GAME','TEAM SYSTEMS'],
+    desc:'Coordinate the opening minutes around lane matchups, jungle routes, priority, first recalls, invades, and early objectives.',
+    purpose:'Turn the early game into a shared team plan rather than five disconnected lane and jungle plans.',
+    objectives:['Connect jungle routing with lane states.','Identify expected priority and vulnerable lanes.','Plan first recalls and early objective access.','Prepare alternatives when the expected opening changes.'],
+    topics:['Level 1','Jungle routes','Lane priority','Invades','First recalls','Early objectives','Contingency planning'],
+    activity:'Teams receive a draft and build a first 8–10 minute plan, including expected lane states, jungle interactions, recall timing, and alternative branches.',
+    assessment:'Evaluate whether the plan is internally consistent across all five roles and whether players understand the conditions that would trigger an adaptation.',
+    geng:'Gen.G coaches can show how professional teams translate draft information into a structured opening plan.',
+    adapt:'Best for established teams with stable roles and enough matchup knowledge to predict early lane states.'
+  },
+  {
+    id:'jungle-tracking-team',cat:'gameplay',level:'special',title:'Jungle Tracking as a Team',duration:'60–90 min',tags:['INFORMATION','TEAM SYSTEMS'],
+    desc:'Treat enemy-jungle tracking as a five-player information task rather than a responsibility held only by the jungler.',
+    purpose:'Build a team information network where lane observations, wards, timers, and missing information combine into useful predictions.',
+    objectives:['Identify what each role can contribute to jungle tracking.','Update predictions when new information appears.','Communicate uncertainty rather than false certainty.','Adjust lane and map behavior based on likely enemy location.'],
+    topics:['Pathing inference','Camp timers','Lane information','Ward information','Missing information','Communication','Risk adjustment'],
+    activity:'Players review hidden-information sequences and continuously update the likely enemy jungle position as new clues appear.',
+    assessment:'Evaluate prediction quality, communication clarity, and whether player behavior changes appropriately when certainty is low.',
+    geng:'Gen.G analysts/coaches can demonstrate how professional teams combine multiple small information sources to track jungle movement.',
+    adapt:'High-level module; basic tracking principles can still appear in role practice without teaching the full team system.'
+  },
+  {
+    id:'teamfight-prep',cat:'gameplay',level:'special',title:'Teamfight Preparation Before the Fight',duration:'60–90 min',tags:['TEAMFIGHT','TEAM SYSTEMS'],
+    desc:'Prepare positioning, vision, flank control, cooldown information, and role responsibilities before a major fight begins.',
+    purpose:'Show that many teamfights are effectively won or lost before the first ability is used.',
+    objectives:['Establish safe and threatening positions before contact.','Identify important flank routes and access points.','Confirm key cooldown and summoner information.','Assign role responsibilities before the fight starts.'],
+    topics:['Pre-positioning','Flank control','Vision','Cooldown information','Threat zones','Engage ranges','Role assignment'],
+    activity:'Pause VODs 20–30 seconds before major fights and have teams construct the ideal setup before comparing it with the actual sequence.',
+    assessment:'Evaluate whether players identify preparation errors separately from mechanical execution errors.',
+    geng:'Gen.G coaches can demonstrate how elite teams prepare the map and communication before decisive fights.',
+    adapt:'Use after participants already understand general teamfighting and role execution.'
+  },
+  {
+    id:'cooldown-summoner-play',cat:'gameplay',level:'special',title:'Playing Around Cooldowns & Summoner Spells',duration:'60–90 min',tags:['TIMING','INFORMATION'],
+    desc:'Track and exploit important Flash, ultimate, summoner, and long-cooldown windows as a coordinated team.',
+    purpose:'Turn cooldown information into planned pressure rather than passive notes in chat or memory.',
+    objectives:['Prioritize which cooldowns materially change the next play.','Communicate and retain cooldown information.','Create a map plan around unavailable enemy tools.','Avoid forcing after the exploitable window has expired.'],
+    topics:['Flash timers','Ultimates','Key basic cooldowns','Window creation','Communication','Timing','Target selection'],
+    activity:'Teams receive fight and map scenarios with known cooldown states, then create the highest-value play for the available window.',
+    assessment:'Players must connect tracked information to a concrete action and timing window.',
+    geng:'Gen.G staff can show how professional teams prioritize and operationalize cooldown information during live games.',
+    adapt:'Best for teams with established communication systems; simpler versions can be used within general teamfight teaching.'
+  },
+  {
+    id:'map-state-decisions',cat:'gameplay',level:'special',title:'Map State Recognition & Decision Trees',duration:'60–90 min',tags:['MACRO','DECISION'],
+    desc:'Read the complete map state, identify realistic options, and build decision trees instead of relying on habitual macro calls.',
+    purpose:'Develop high-level decision quality by making players compare multiple valid actions and the conditions under which each becomes correct.',
+    objectives:['Identify the most relevant information in a map state.','Generate multiple realistic options.','Compare likely opponent responses.','Choose actions based on conditions rather than fixed rules.'],
+    topics:['Map-state reading','Decision trees','Opponent responses','Conditional plans','Risk/reward','Information priorities','Follow-up states'],
+    activity:'Teams solve sequential map-state problems where each choice changes the next scenario and requires a new decision rather than one predetermined answer.',
+    assessment:'Evaluate the reasoning process, conditions, and follow-up plan rather than whether the selected option matches a single model answer.',
+    geng:'Gen.G coaches and analysts can expose participants to the decision complexity present in professional macro and explain how elite teams narrow the available options.',
+    adapt:'Reserved for high-level cohorts that already understand the component concepts such as tempo, objectives, side lanes, and resource trading.'
+  },
+  {
+    id:'scrim-cycle',cat:'gameplay',level:'semi',title:'Professional Scrim & Review Cycle',duration:'60–90 min',tags:['TEAM','SCRIMS'],
+    desc:'Learn how structured teams prepare for scrims, define goals, collect observations, review, and adjust future practice.',
+    purpose:'Expose participants to a professional training workflow rather than treating scrims as isolated games.',
+    objectives:['Set clear scrim objectives.','Collect useful observations during a block.','Separate immediate notes from deeper review.','Carry learning into the next block.'],
+    topics:['Pre-scrim objectives','Block structure','Note-taking','Immediate debrief','Selected VOD review','Practice iteration'],
+    activity:'Run a shortened professional-style cycle: objective setting, scrim/game segment, immediate notes, selected review, next-step plan.',
+    assessment:'Evaluate whether the team’s next practice objective is clearly linked to evidence from the previous block.',
+    geng:'This is one of the strongest Gen.G-specific modules: staff can demonstrate how a professional organization structures practice and review.',
+    adapt:'For public cohorts, simulate the cycle with shorter games or VODs. For established teams, use their actual scrim environment.'
+  },
+  {
+    id:'data-tech',cat:'gameplay',level:'semi',title:'Performance Technology & Data Analysis',duration:'60–90 min',tags:['DATA','TECH'],
+    desc:'Use performance data and Gen.G technology to identify patterns, ask better questions, and create actionable training goals.',
+    purpose:'Teach players to interpret data as evidence for investigation rather than treating statistics as conclusions.',
+    objectives:['Understand what performance data can and cannot show.','Identify useful patterns.','Investigate causes behind statistical trends.','Convert findings into practice objectives.'],
+    topics:['Performance metrics','Pattern detection','Context','Data limitations','Tracking progress','Actionable analysis'],
+    activity:'Participants use available Gen.G/PC bang performance tools or sample datasets to identify one pattern and build a practice plan from it.',
+    assessment:'Players must explain the evidence, possible causes, and an appropriate next training action.',
+    geng:'Feature Gen.G’s own performance technology and show how the organization expects players to use the system in practice.',
+    adapt:'The tool demonstration can be accessible to broad cohorts, while deeper interpretation and team-level analysis can be reserved for experienced groups.'
+  },
+  {
+    id:'opponent-prep',cat:'gameplay',level:'special',title:'Opponent Preparation & Match Planning',duration:'60–90 min',tags:['SCOUTING','TEAM'],
+    desc:'Prepare for a known opponent by identifying tendencies, champion priorities, habits, and strategic opportunities.',
+    purpose:'Teach structured competitive preparation for teams that regularly play scheduled opponents.',
+    objectives:['Identify repeatable opponent tendencies.','Separate meaningful patterns from noise.','Build targeted draft/gameplay preparation.','Prepare adaptations if the opponent changes approach.'],
+    topics:['Scouting','Champion tendencies','Draft habits','Lane tendencies','Objective habits','Match plan','Adaptation'],
+    activity:'Teams receive opponent VODs or match history, produce a short scouting report, and present a match plan.',
+    assessment:'Evaluate whether recommendations are evidence-based, relevant, and usable by players in an actual match.',
+    geng:'A Gen.G analyst can demonstrate how professional opponent preparation is organized and what information is considered actionable.',
+    adapt:'Best suited to semi-professional, academy, Tier 3, or other structured teams. It should not be treated as a core module for casual or early-stage cohorts.'
+  },
+
+  {id:'top-track',cat:'role',level:'general',title:'Top Lane Practice Track',duration:'Practice block',tags:['TOP','SOLO QUEUE'],desc:'Role-specific objectives for matchup planning, wave control, side-lane responsibility, pressure, and strongside/weakside play.',purpose:'Provide targeted solo queue objectives after shared team workshops.',objectives:['Apply team concepts from a top-lane perspective.','Practice role-specific wave and side-lane decisions.'],topics:['Matchups','Wave control','Weakside/strongside','Side lanes','Teleport timing'],activity:'Assign 1–2 objectives before solo queue and review selected examples afterward.',assessment:'Short objective-based review rather than a separate classroom test.',geng:'Coach feedback can tailor objectives to the player’s current development needs.',adapt:'This is a breakout/practice track, not a 90-minute whole-team lecture.'},
+  {id:'jungle-track',cat:'role',level:'general',title:'Jungle Practice Track',duration:'Practice block',tags:['JUNGLE','SOLO QUEUE'],desc:'Role-specific objectives for pathing, tracking, lane interaction, tempo, vision, and objective preparation.',purpose:'Provide targeted jungle practice connected to shared curriculum concepts.',objectives:['Apply information and tempo concepts from the jungle role.','Create clearer purpose behind pathing and lane interaction.'],topics:['Pathing','Tracking','Lane states','Objectives','Tempo','Vision'],activity:'Assign targeted solo queue objectives based on the day’s workshop.',assessment:'Review whether jungle decisions supported the stated practice goal.',geng:'Coaches can select objectives from observed weaknesses.',adapt:'Best used as individualized practice guidance.'},
+  {id:'mid-track',cat:'role',level:'general',title:'Mid Lane Practice Track',duration:'Practice block',tags:['MID','SOLO QUEUE'],desc:'Role-specific objectives for lane pressure, wave timing, roaming, map connection, and resource decisions.',purpose:'Connect shared macro and team concepts to mid-lane practice.',objectives:['Use lane priority with clear purpose.','Improve timing between lane and map responsibilities.'],topics:['Priority','Roaming','Wave timing','Map movement','Resource allocation'],activity:'Use solo queue games with one or two defined map/laning objectives.',assessment:'Review selected decisions rather than total game result.',geng:'Coaches can tie objectives to the player’s team role.',adapt:'Practice track rather than whole-team workshop.'},
+  {id:'bot-track',cat:'role',level:'general',title:'Bot Lane Practice Track',duration:'Practice block',tags:['BOT','SOLO QUEUE'],desc:'Role-specific objectives for lane coordination, farming, positioning, damage windows, and resource conversion.',purpose:'Develop bot-lane execution without turning whole-team workshop time into position-specific teaching.',objectives:['Improve lane and fight execution.','Connect resource intake to teamfight responsibility.'],topics:['Lane coordination','CS','Positioning','Damage windows','Objective timing'],activity:'Targeted solo queue/duo practice with review prompts.',assessment:'Check execution against the selected objective.',geng:'Coach feedback can focus on how the player fits the team’s resource model.',adapt:'Can be paired with support practice when appropriate.'},
+  {id:'support-track',cat:'role',level:'general',title:'Support Practice Track',duration:'Practice block',tags:['SUPPORT','SOLO QUEUE'],desc:'Role-specific objectives for vision, lane coordination, roaming, information, engage/disengage, and team enablement.',purpose:'Connect support play to team information and coordination systems.',objectives:['Improve purposeful movement and vision.','Recognize when to enable lanes, jungle, or teamfight setup.'],topics:['Vision','Roaming','Lane states','Information','Engage/disengage','Map movement'],activity:'Use targeted solo queue objectives and selected VOD review.',assessment:'Evaluate movement and decisions relative to available information.',geng:'Staff can align support objectives with professional team expectations.',adapt:'Practice track rather than full-team classroom content.'},
+
+  {id:'physical-prep',cat:'performance',level:'general',title:'Physical Preparation for Esports',duration:'45–60 min',tags:['PHYSICAL','HEALTH'],desc:'Simple physical preparation, movement, and warm-up strategies for long training and competition days.',purpose:'Support readiness and sustainable practice during intensive bootcamps.',objectives:['Understand why movement and warm-up matter.','Build a repeatable pre-practice routine.'],topics:['Warm-up','Movement','Breaks','Physical readiness'],activity:'Create and perform a short pre-practice routine.',assessment:'Participants can independently repeat the routine and explain its purpose.',geng:'Gen.G can demonstrate routines used or supported within its player environment.',adapt:'Keep claims within available professional expertise; specialist-led content can be added when available.'},
+  {id:'ergonomics',cat:'performance',level:'general',title:'Ergonomics & Injury Prevention',duration:'45–60 min',tags:['SETUP','HEALTH'],desc:'Improve desk, chair, monitor, mouse, keyboard, and posture setup while reducing avoidable physical strain.',purpose:'Help players create a sustainable playing setup.',objectives:['Identify common setup problems.','Adjust equipment and posture for comfort and consistency.'],topics:['Chair/desk setup','Monitor position','Input devices','Posture','Repetitive strain'],activity:'Players audit and adjust their own station using a checklist.',assessment:'Before/after workstation review.',geng:'Use the Gen.G training/PC bang environment as a practical reference point.',adapt:'Can be combined with hardware/setup orientation.'},
+  {id:'recovery',cat:'performance',level:'general',title:'Recovery, Sleep & Training Load',duration:'45–60 min',tags:['RECOVERY','SCHEDULE'],desc:'Manage fatigue and training volume across multi-day bootcamps and competitive schedules.',purpose:'Teach participants that sustainable performance depends on recovery as well as practice.',objectives:['Recognize signs of declining practice quality.','Plan sleep, breaks, and training load around performance.'],topics:['Sleep','Breaks','Fatigue','Training volume','Recovery'],activity:'Players audit a sample training day and redesign it for better recovery.',assessment:'Create a realistic recovery plan for the bootcamp schedule.',geng:'Staff can explain how professional schedules balance practice and recovery.',adapt:'Can remain introductory unless qualified performance staff are available.'},
+  {id:'nutrition',cat:'performance',level:'general',title:'Nutrition & Hydration for Performance',duration:'45–60 min',tags:['NUTRITION','HEALTH'],desc:'Practical eating and hydration habits around long practice and competition days.',purpose:'Provide simple performance-support habits rather than a clinical nutrition course.',objectives:['Recognize basic fueling and hydration needs.','Plan practical meals/snacks around training.'],topics:['Hydration','Meal timing','Long sessions','Energy management'],activity:'Plan a simple bootcamp training-day food/hydration schedule.',assessment:'Participants produce a workable daily plan.',geng:'Can be strengthened by Gen.G performance staff or nutrition partners when available.',adapt:'Avoid individualized medical/dietary prescriptions unless delivered by an appropriate professional.'},
+
+  {id:'brand',cat:'pr',level:'general',title:'Player Identity & Personal Branding',duration:'60–90 min',tags:['BRAND','PR'],desc:'Define a recognizable and authentic player identity that communicates more than in-game rank or results.',purpose:'Help players understand how teams, fans, and partners perceive them beyond gameplay.',objectives:['Identify personal/player strengths and differentiators.','Define how the player wants to be perceived.','Create the foundation of a consistent personal brand.'],topics:['Player identity','Strengths','Playstyle','Personality','Values','Signature champions','Differentiation'],activity:'Build a Player Brand Profile and compare “How I see myself” with “How teammates see me.”',assessment:'Completed Player Brand Profile with clear identity, strengths, values, differentiators, and desired perception.',geng:'Gen.G staff can explain how player identity functions within a major esports organization and brand.',adapt:'Keep the player’s identity authentic rather than forcing every participant into the same content style.'},
+  {id:'obs-stream',cat:'pr',level:'general',title:'Streaming Setup & OBS',duration:'60–90 min',tags:['STREAMING','TECH'],desc:'Set up a functional stream and understand the basic technical workflow needed for consistent player content.',purpose:'Give players practical streaming competence without trying to teach every platform in depth.',objectives:['Configure a basic OBS scene/audio workflow.','Understand stream quality basics.','Create a repeatable pre-stream checklist.'],topics:['OBS','Scenes','Audio','Bitrate/resolution basics','Alerts/overlays','Testing'],activity:'Build or audit a basic OBS setup and run a short test stream/recording.',assessment:'A stable, understandable streaming setup and checklist.',geng:'Gen.G can demonstrate practical standards expected from players/content creators.',adapt:'Platform specifics can be swapped. A player who already streams on Kick, Twitch, YouTube, or another platform should focus on the gaps they actually have.'},
+  {id:'social',cat:'pr',level:'general',title:'Social Media & Platform Strategy',duration:'60–90 min',tags:['SOCIAL','PR'],desc:'Understand the strengths of major platforms and build a realistic content approach without trying to master every platform at once.',purpose:'Help players choose platforms intentionally and communicate professionally online.',objectives:['Understand differences between platforms.','Choose a realistic primary/supporting platform mix.','Plan appropriate content and promotion.'],topics:['Twitch','YouTube','Kick','TikTok','Instagram','X','Platform benefits','Cross-promotion'],activity:'Choose one primary platform and 1–2 supporting platforms, then build a short content plan.',assessment:'A simple platform/content strategy that matches the player’s goals and existing skills.',geng:'Staff can explain which platforms and content formats matter for different player/organization goals.',adapt:'Teach platform benefits broadly, then spend practical time only on platforms relevant to the participant.'},
+  {id:'portfolio',cat:'pr',level:'general',title:'Player Portfolio',duration:'60–90 min',tags:['CAREER','BRAND'],desc:'Build a concise portfolio that communicates achievements, playstyle, strengths, goals, and professional identity to teams.',purpose:'Prepare players to present themselves professionally when opportunities arise.',objectives:['Select relevant information.','Present achievements and strengths clearly.','Create a portfolio teams can quickly understand.'],topics:['Achievements','Playstyle','Strengths/weaknesses','Champion pool','Goals','Contact/content links'],activity:'Create or improve a one-page player portfolio.',assessment:'Completed portfolio reviewed for clarity, relevance, and professionalism.',geng:'Recruitment/coaching staff can explain what information is actually useful when evaluating players.',adapt:'Can be simplified for younger/developing players or expanded with VOD/content links for serious prospects.'},
+  {id:'media',cat:'pr',level:'general',title:'Media, Fan & Sponsor Communication',duration:'60–90 min',tags:['MEDIA','COMMUNICATION'],desc:'Practice interviews, fan interaction, sponsor representation, and other public-facing situations players may encounter.',purpose:'Prepare players to communicate professionally while preserving personality.',objectives:['Answer questions clearly under pressure.','Handle criticism and difficult questions.','Represent a team and sponsors appropriately.'],topics:['Interviews','Body language','Fans','Criticism','Sponsor events','Organization representation'],activity:'Simulated interview/media situations with feedback and progressively harder questions.',assessment:'Mock media-day or press-conference performance compared with an initial baseline.',geng:'Gen.G PR/media staff can recreate realistic organizational expectations and professional media environments.',adapt:'The scenarios can scale from beginner interviews to higher-pressure sponsor/controversy questions.'},
+  {id:'crisis',cat:'pr',level:'semi',title:'Crisis & Controversy Management',duration:'30–60 min',tags:['PR','RISK'],desc:'Understand how online conflict, inappropriate posts, or public mistakes can affect the player, team, sponsors, and long-term career.',purpose:'Build awareness of responsibility and appropriate response when public problems occur.',objectives:['Recognize high-risk public behavior.','Understand when not to respond immediately.','Know when to involve the organization.','Separate criticism from harassment or useful feedback.'],topics:['Online conflict','Toxicity','Public mistakes','Team reputation','Sponsor impact','Escalation'],activity:'Discuss short realistic scenarios and decide what the player should do first, what should be avoided, and when staff should be involved.',assessment:'Scenario-based response discussion rather than a standalone formal test.',geng:'PR staff can explain organization-level response processes and the consequences players may not see themselves.',adapt:'This can be a shorter module linked to the media workshop rather than a full 90-minute session.'}
+];
+
+let currentCat='gameplay';
+let currentLevel='all';
+let currentView='detailed';
+const levelOrder={general:0,semi:1,special:2};
+const tabs=document.getElementById('tabs');
+const filters=document.getElementById('filters');
+const content=document.getElementById('content');
+const search=document.getElementById('search');
+const modal=document.getElementById('modal');
+const countBadge=document.getElementById('countBadge');
+
+function levelLabel(level){return level==='general'?'General':level==='semi'?'Semi-Specialized':'Specialized'}
+function tabRender(){
+  tabs.innerHTML=Object.entries(categories).map(([key,v])=>`<button class="tab ${key===currentCat?'active':''}" data-cat="${key}">${v.label}</button>`).join('');
+  [...tabs.querySelectorAll('.tab')].forEach(b=>b.onclick=()=>{currentCat=b.dataset.cat;currentLevel='all';search.value='';render();});
+}
+function filterRender(){
+  const levels=[['all','All levels'],['general','General'],['semi','Semi-Specialized'],['special','Specialized']];
+  filters.innerHTML=levels.map(([k,l])=>`<button class="filter ${k===currentLevel?'active':''}" data-level="${k}">${l}</button>`).join('');
+  [...filters.querySelectorAll('.filter')].forEach(b=>b.onclick=()=>{currentLevel=b.dataset.level;renderCards();});
+}
+function render(){
+  tabRender();filterRender();
+  document.getElementById('categoryTitle').textContent=categories[currentCat].title;
+  document.getElementById('categoryDescription').textContent=categories[currentCat].description;
+  renderCards();
+}
+function renderCards(){
+  const q=search.value.trim().toLowerCase();
+  const list=workshops
+    .filter(w=>w.cat===currentCat && (currentLevel==='all'||w.level===currentLevel) && (!q || [w.title,w.desc,w.tags.join(' '),w.topics.join(' ')].join(' ').toLowerCase().includes(q)))
+    .sort((a,b)=>levelOrder[a.level]-levelOrder[b.level]);
+  countBadge.textContent=workshops.length;
+  if(!list.length){content.innerHTML='<div class="empty">No workshops match the current filters.</div>';return}
+
+  const levels=['general','semi','special'].filter(level=>list.some(w=>w.level===level));
+  content.innerHTML=levels.map(level=>{
+    const group=list.filter(w=>w.level===level);
+    const levelDescription=level==='general'
+      ? 'Useful to most competitive League of Legends players.'
+      : level==='semi'
+      ? 'Best once fundamentals are established and/or players operate within a structured team.'
+      : 'Primarily intended for high-level competitive teams, academy environments, Tier 3 players, or similar participants.';
+    const body=currentView==='compact'
+      ? `<div class="compact-grid">${group.map(compactHTML).join('')}</div>`
+      : `<div class="cards">${group.map(cardHTML).join('')}</div>`;
+    return `<section class="level-section">
+      <div class="section-title"><div><h2>${levelLabel(level)}</h2><p>${levelDescription}</p></div><p>${group.length} ${group.length===1?'workshop':'workshops'}</p></div>
+      ${body}
+    </section>`;
+  }).join('');
+
+  [...content.querySelectorAll('.view-btn')].forEach(b=>b.onclick=()=>openModal(b.dataset.id));
+  [...content.querySelectorAll('.card')].forEach(c=>c.addEventListener('dblclick',()=>openModal(c.dataset.id)));
+  [...content.querySelectorAll('.compact-card')].forEach(c=>c.onclick=()=>openModal(c.dataset.id));
+}
+function cardHTML(w){
+  return `<article class="card ${w.level}" data-id="${w.id}">
+    <div class="card-head">
+      <div class="badges"><span class="badge ${w.level}">${levelLabel(w.level)}</span><span class="badge duration">${w.duration}</span></div>
+      <h3>${w.title}</h3><p class="desc">${w.desc}</p>
+    </div>
+    <div class="card-bottom"><div class="card-tags">${w.tags.slice(0,3).map(t=>`<span class="mini-tag">${t}</span>`).join('')}</div><button class="view-btn" data-id="${w.id}">View workshop →</button></div>
+  </article>`
+}
+function compactHTML(w){
+  return `<button class="compact-card ${w.level}" data-id="${w.id}" title="${levelLabel(w.level)} • ${w.duration}">${w.title}</button>`;
+}
+function openModal(id){
+  const w=workshops.find(x=>x.id===id); if(!w)return;
+  document.getElementById('modalKicker').textContent=`${categories[w.cat].label} • ${levelLabel(w.level)}`;
+  document.getElementById('modalTitle').textContent=w.title;
+  document.getElementById('modalMeta').textContent=`${w.duration} • ${w.tags.join(' • ')}`;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="detail-grid">
+      <section class="detail"><h4>Purpose</h4><p>${w.purpose}</p></section>
+      <section class="detail"><h4>Recommended Audience</h4><p>${levelLabel(w.level)} workshop. ${w.level==='general'?'Useful to most competitive players.':w.level==='semi'?'Best once fundamentals are established and/or players work within a structured team.':'Primarily intended for high-level competitive teams, academy environments, Tier 3 players, or similar participants.'}</p></section>
+      <section class="detail"><h4>Learning Objectives</h4><ul>${w.objectives.map(x=>`<li>${x}</li>`).join('')}</ul></section>
+      <section class="detail"><h4>Key Topics</h4><ul>${w.topics.map(x=>`<li>${x}</li>`).join('')}</ul></section>
+      <section class="detail full"><h4>Workshop / Activity</h4><p>${w.activity}</p></section>
+      <section class="detail"><h4>Assessment</h4><p>${w.assessment}</p></section>
+      <section class="detail"><h4>Adaptation Notes</h4><p>${w.adapt}</p></section>
+      <section class="detail full gen-g"><h4>Gen.G Contribution</h4><p>${w.geng}</p></section>
+    </div>`;
+  modal.classList.add('show');document.body.style.overflow='hidden';
+}
+function closeModal(){modal.classList.remove('show');document.body.style.overflow='';}
+document.getElementById('close').onclick=closeModal;
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.getElementById('detailedView').onclick=()=>{currentView='detailed';document.getElementById('detailedView').classList.add('active');document.getElementById('compactView').classList.remove('active');renderCards();};
+document.getElementById('compactView').onclick=()=>{currentView='compact';document.getElementById('compactView').classList.add('active');document.getElementById('detailedView').classList.remove('active');renderCards();};
+search.addEventListener('input',renderCards);
+render();
+</script>
+</body>
+</html>
